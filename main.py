@@ -118,7 +118,7 @@ def test():
         return {"predicted": text}
     else :
         return "I'm alive!"
-# if __name__ == "__main__":
+if __name__ == "__main__":
     
 
     # def caption(vocab, imagepath):
@@ -168,4 +168,4 @@ def test():
     #     # plt.imshow(np.asarray(image))
     #     return (sentence)
     
-app.run(debug=True,port=8080)
+    app.run(debug=True,port=8080)
