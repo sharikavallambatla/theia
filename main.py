@@ -3,9 +3,9 @@ from flask import Flask, request, Response,jsonify
 import torch
 # import matplotlib.pyplot as plt
 import numpy as np 
-import argparse
-import pickle 
-import os
+# import argparse
+# import pickle 
+# import os
 from torchvision import transforms 
 # from build_vocab import Vocabulary
 from model import EncoderCNN, DecoderRNN
@@ -20,26 +20,26 @@ app = Flask(__name__)
 import os
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-class Vocabulary(object):
-    """Simple vocabulary wrapper."""
-    def __init__(self):
-        self.word2idx = {}
-        self.idx2word = {}
-        self.idx = 0
+# class Vocabulary(object):
+#     """Simple vocabulary wrapper."""
+#     def __init__(self):
+#         self.word2idx = {}
+#         self.idx2word = {}
+#         self.idx = 0
 
-    def add_word(self, word):
-        if not word in self.word2idx:
-            self.word2idx[word] = self.idx
-            self.idx2word[self.idx] = word
-            self.idx += 1
+#     def add_word(self, word):
+#         if not word in self.word2idx:
+#             self.word2idx[word] = self.idx
+#             self.idx2word[self.idx] = word
+#             self.idx += 1
 
-    def __call__(self, word):
-        if not word in self.word2idx:
-            return self.word2idx['<unk>']
-        return self.word2idx[word]
+#     def __call__(self, word):
+#         if not word in self.word2idx:
+#             return self.word2idx['<unk>']
+#         return self.word2idx[word]
 
-    def __len__(self):
-        return len(self.word2idx)
+#     def __len__(self):
+#         return len(self.word2idx)
 def load_image(image_path, transform=None):
     image = Image.open(image_path).convert('RGB')
     image = image.resize([224, 224], Image.LANCZOS)
@@ -49,10 +49,10 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(vocab,imagepath):
+def caption(imagepath):
     
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
@@ -92,8 +92,8 @@ def caption(vocab,imagepath):
     
     # Print out the image and the generated caption
     print (sentence)
-    image = Image.open('png/example.png')
-    plt.imshow(np.asarray(image))
+    # image = Image.open('png/example.png')
+    # plt.imshow(np.asarray(image))
     return (sentence)
 # global vocab
 # with open('data/vocab.pkl', 'rb') as f:
@@ -101,17 +101,17 @@ def caption(vocab,imagepath):
 @app.route('/')
 def index():
     return "Backend running on port 5000"
-global vocab
+
 @app.route('/predict', methods=['POST','GET'])
 def test():
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
     
     if request.method == 'POST':
         file = request.files['image']
         img = Image.open(file.stream)
         img = img.save("img1.jpeg")
-        text=caption(vocab,'img1.jpeg')
+        text=caption('img1.jpeg')
         text=text[8:-5]
 
         return {"predicted": text}
