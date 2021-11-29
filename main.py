@@ -78,7 +78,7 @@ def caption(vocab,imagepath):
 @app.route('/')
 def index():
     return "Backend running on port 5000"
-
+global vocab
 @app.route('/predict', methods=['POST','GET'])
 def test():
     with open('data/vocab.pkl', 'rb') as f:
