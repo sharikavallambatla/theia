@@ -1,7 +1,7 @@
 from flask import Flask, request, Response,jsonify
 from sample import caption
 import torch
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np 
 import argparse
 import pickle 
@@ -28,7 +28,7 @@ def test():
         file = request.files['image']
         img = Image.open(file.stream)
         img = img.save("img1.jpeg")
-        text=caption('img1.jpeg')
+        text=caption(vocab,'img1.jpeg')
         text=text[8:-5]
 
         return {"predicted": text}
@@ -36,8 +36,8 @@ def test():
         return "I'm alive!"
 if __name__ == "__main__":
     
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
     
     
     app.run(debug=True,port=8080)

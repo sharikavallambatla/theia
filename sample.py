@@ -22,10 +22,10 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(imagepath):
+def caption(vocab,imagepath):
     
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
