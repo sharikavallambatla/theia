@@ -81,8 +81,8 @@ def index():
 
 @app.route('/predict', methods=['POST','GET'])
 def test():
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
     
     if request.method == 'POST':
         file = request.files['image']
