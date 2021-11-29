@@ -8,7 +8,7 @@ from torchvision import transforms
 from build_vocab import Vocabulary
 from model import EncoderCNN, DecoderRNN
 from PIL import Image
-
+from build_vocab import Vocabulary
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -22,8 +22,10 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(vocab,imagepath):
+def caption(imagepath):
     
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
