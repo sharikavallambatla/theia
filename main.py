@@ -49,16 +49,16 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(imagepath):
+def caption(vocab, imagepath):
     
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
         transforms.Normalize((0.485, 0.456, 0.406), 
                              (0.229, 0.224, 0.225))])
-    
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
     # Load vocabulary wrapper
     
 
@@ -102,25 +102,39 @@ def caption(imagepath):
 def index():
     return "Backend running on port 5000"
 
-@app.route('/predict', methods=['POST','GET'])
-def test():
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
+# @app.route('/predict', methods=['POST','GET'])
+# def test():
+#     # with open('data/vocab.pkl', 'rb') as f:
+#     #     vocab = pickle.load(f)
     
-    if request.method == 'POST':
-        file = request.files['image']
-        img = Image.open(file.stream)
-        img = img.save("img1.jpeg")
-        text=caption('img1.jpeg')
-        text=text[8:-5]
+#     if request.method == 'POST':
+#         file = request.files['image']
+#         img = Image.open(file.stream)
+#         img = img.save("img1.jpeg")
+#         text=caption('img1.jpeg')
+#         text=text[8:-5]
 
-        return {"predicted": text}
-    else :
-        return "I'm alive!"
+#         return {"predicted": text}
+#     else :
+#         return "I'm alive!"
 if __name__ == "__main__":
     
     with open('data/vocab.pkl', 'rb') as f:
         vocab = pickle.load(f)
-    
+    @app.route('/predict', methods=['POST','GET'])
+    def test():
+        # with open('data/vocab.pkl', 'rb') as f:
+        #     vocab = pickle.load(f)
+        
+        if request.method == 'POST':
+            file = request.files['image']
+            img = Image.open(file.stream)
+            img = img.save("img1.jpeg")
+            text=caption(vocab,'img1.jpeg')
+            text=text[8:-5]
+
+            return {"predicted": text}
+        else :
+            return "I'm alive!"
     
     app.run(debug=True,port=8080)
