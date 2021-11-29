@@ -1,4 +1,8 @@
-data
+models
+data/annotations
+data/resized2014
+data/train2014
+data/val2014
 __pycache__
 
 
