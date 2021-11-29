@@ -49,92 +49,123 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(vocab, imagepath):
+# def caption(vocab, imagepath):
     
     
-    # Image preprocessing
-    transform = transforms.Compose([
-        transforms.ToTensor(), 
-        transforms.Normalize((0.485, 0.456, 0.406), 
-                             (0.229, 0.224, 0.225))])
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
-    # Load vocabulary wrapper
+#     # Image preprocessing
+#     transform = transforms.Compose([
+#         transforms.ToTensor(), 
+#         transforms.Normalize((0.485, 0.456, 0.406), 
+#                              (0.229, 0.224, 0.225))])
+#     # with open('data/vocab.pkl', 'rb') as f:
+#     #     vocab = pickle.load(f)
+#     # Load vocabulary wrapper
     
 
-    # Build models
-    encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
-    decoder = DecoderRNN(256, 512, len(vocab), 1)
-    encoder = encoder.to(device)
-    decoder = decoder.to(device)
+#     # Build models
+#     encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
+#     decoder = DecoderRNN(256, 512, len(vocab), 1)
+#     encoder = encoder.to(device)
+#     decoder = decoder.to(device)
 
-    # Load the trained model parameters
-    encoder.load_state_dict(torch.load('models/encoder-5-3000.pkl'))
-    decoder.load_state_dict(torch.load('models/decoder-5-3000.pkl'))
+#     # Load the trained model parameters
+#     encoder.load_state_dict(torch.load('models/encoder-5-3000.pkl'))
+#     decoder.load_state_dict(torch.load('models/decoder-5-3000.pkl'))
 
-    # Prepare an image
-    image = load_image(imagepath, transform)
-    image_tensor = image.to(device)
+#     # Prepare an image
+#     image = load_image(imagepath, transform)
+#     image_tensor = image.to(device)
     
-    # Generate an caption from the image
-    feature = encoder(image_tensor)
-    sampled_ids = decoder.sample(feature)
-    sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
+#     # Generate an caption from the image
+#     feature = encoder(image_tensor)
+#     sampled_ids = decoder.sample(feature)
+#     sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
     
-    # Convert word_ids to words
-    sampled_caption = []
-    for word_id in sampled_ids:
-        word = vocab.idx2word[word_id]
-        sampled_caption.append(word)
-        if word == '<end>':
-            break
-    sentence = ' '.join(sampled_caption)
+#     # Convert word_ids to words
+#     sampled_caption = []
+#     for word_id in sampled_ids:
+#         word = vocab.idx2word[word_id]
+#         sampled_caption.append(word)
+#         if word == '<end>':
+#             break
+#     sentence = ' '.join(sampled_caption)
     
-    # Print out the image and the generated caption
-    print (sentence)
-    # image = Image.open('png/example.png')
-    # plt.imshow(np.asarray(image))
-    return (sentence)
+#     # Print out the image and the generated caption
+#     print (sentence)
+#     # image = Image.open('png/example.png')
+#     # plt.imshow(np.asarray(image))
+#     return (sentence)
 # global vocab
 # with open('data/vocab.pkl', 'rb') as f:
 #         vocab = pickle.load(f)
 @app.route('/')
 def index():
-    return "Backend running on port 5000"
+    return "Backend running on port 8080"
 
-# @app.route('/predict', methods=['POST','GET'])
-# def test():
-#     # with open('data/vocab.pkl', 'rb') as f:
-#     #     vocab = pickle.load(f)
+@app.route('/predict', methods=['POST','GET'])
+def test():
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
     
-#     if request.method == 'POST':
-#         file = request.files['image']
-#         img = Image.open(file.stream)
-#         img = img.save("img1.jpeg")
-#         text=caption('img1.jpeg')
-#         text=text[8:-5]
+    if request.method == 'POST':
+        file = request.files['image']
+        img = Image.open(file.stream)
+        img = img.save("img1.jpeg")
+        text=caption('img1.jpeg')
+        text=text[8:-5]
 
-#         return {"predicted": text}
-#     else :
-#         return "I'm alive!"
+        return {"predicted": text}
+    else :
+        return "I'm alive!"
 if __name__ == "__main__":
     
     with open('data/vocab.pkl', 'rb') as f:
         vocab = pickle.load(f)
-    @app.route('/predict', methods=['POST','GET'])
-    def test():
+    def caption(vocab, imagepath):
+    
+    
+        # Image preprocessing
+        transform = transforms.Compose([
+            transforms.ToTensor(), 
+            transforms.Normalize((0.485, 0.456, 0.406), 
+                                (0.229, 0.224, 0.225))])
         # with open('data/vocab.pkl', 'rb') as f:
         #     vocab = pickle.load(f)
+        # Load vocabulary wrapper
         
-        if request.method == 'POST':
-            file = request.files['image']
-            img = Image.open(file.stream)
-            img = img.save("img1.jpeg")
-            text=caption(vocab,'img1.jpeg')
-            text=text[8:-5]
 
-            return {"predicted": text}
-        else :
-            return "I'm alive!"
+        # Build models
+        encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
+        decoder = DecoderRNN(256, 512, len(vocab), 1)
+        encoder = encoder.to(device)
+        decoder = decoder.to(device)
+
+        # Load the trained model parameters
+        encoder.load_state_dict(torch.load('models/encoder-5-3000.pkl'))
+        decoder.load_state_dict(torch.load('models/decoder-5-3000.pkl'))
+
+        # Prepare an image
+        image = load_image(imagepath, transform)
+        image_tensor = image.to(device)
+        
+        # Generate an caption from the image
+        feature = encoder(image_tensor)
+        sampled_ids = decoder.sample(feature)
+        sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
+        
+        # Convert word_ids to words
+        sampled_caption = []
+        for word_id in sampled_ids:
+            word = vocab.idx2word[word_id]
+            sampled_caption.append(word)
+            if word == '<end>':
+                break
+        sentence = ' '.join(sampled_caption)
+        
+        # Print out the image and the generated caption
+        print (sentence)
+        # image = Image.open('png/example.png')
+        # plt.imshow(np.asarray(image))
+        return (sentence)
     
     app.run(debug=True,port=8080)
