@@ -60,7 +60,8 @@ def caption(vocab, imagepath):
     # with open('data/vocab.pkl', 'rb') as f:
     #     vocab = pickle.load(f)
     # Load vocabulary wrapper
-    
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
 
     # Build models
     encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
@@ -119,8 +120,7 @@ def test():
         return "I'm alive!"
 # if __name__ == "__main__":
     
-with open('data/vocab.pkl', 'rb') as f:
-    vocab = pickle.load(f)
+
     # def caption(vocab, imagepath):
     
     
