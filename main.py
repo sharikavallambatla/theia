@@ -49,7 +49,7 @@ def load_image(image_path, transform=None):
     
     return image
 
-def caption(vocab, imagepath):
+def caption(imagepath):
     
     
     # Image preprocessing
