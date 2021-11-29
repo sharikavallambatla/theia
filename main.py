@@ -1,5 +1,5 @@
 from flask import Flask, request, Response,jsonify
-from sample import caption
+# from sample import caption
 import torch
 # import matplotlib.pyplot as plt
 import numpy as np 
@@ -14,6 +14,64 @@ import pyttsx3
 from flask import make_response, send_file
 app = Flask(__name__)
 import os
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+def load_image(image_path, transform=None):
+    image = Image.open(image_path).convert('RGB')
+    image = image.resize([224, 224], Image.LANCZOS)
+    
+    if transform is not None:
+        image = transform(image).unsqueeze(0)
+    
+    return image
+
+def caption(vocab,imagepath):
+    
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
+    # Image preprocessing
+    transform = transforms.Compose([
+        transforms.ToTensor(), 
+        transforms.Normalize((0.485, 0.456, 0.406), 
+                             (0.229, 0.224, 0.225))])
+    
+    # Load vocabulary wrapper
+    
+
+    # Build models
+    encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
+    decoder = DecoderRNN(256, 512, len(vocab), 1)
+    encoder = encoder.to(device)
+    decoder = decoder.to(device)
+
+    # Load the trained model parameters
+    encoder.load_state_dict(torch.load('models/encoder-5-3000.pkl'))
+    decoder.load_state_dict(torch.load('models/decoder-5-3000.pkl'))
+
+    # Prepare an image
+    image = load_image(imagepath, transform)
+    image_tensor = image.to(device)
+    
+    # Generate an caption from the image
+    feature = encoder(image_tensor)
+    sampled_ids = decoder.sample(feature)
+    sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
+    
+    # Convert word_ids to words
+    sampled_caption = []
+    for word_id in sampled_ids:
+        word = vocab.idx2word[word_id]
+        sampled_caption.append(word)
+        if word == '<end>':
+            break
+    sentence = ' '.join(sampled_caption)
+    
+    # Print out the image and the generated caption
+    print (sentence)
+    image = Image.open('png/example.png')
+    plt.imshow(np.asarray(image))
+    return (sentence)
 # global vocab
 # with open('data/vocab.pkl', 'rb') as f:
 #         vocab = pickle.load(f)
@@ -23,8 +81,8 @@ def index():
 
 @app.route('/predict', methods=['POST','GET'])
 def test():
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
     
     if request.method == 'POST':
         file = request.files['image']
