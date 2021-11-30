@@ -20,26 +20,26 @@ app = Flask(__name__)
 import os
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# class Vocabulary(object):
-#     """Simple vocabulary wrapper."""
-#     def __init__(self):
-#         self.word2idx = {}
-#         self.idx2word = {}
-#         self.idx = 0
+class Vocabulary(object):
+    """Simple vocabulary wrapper."""
+    def __init__(self):
+        self.word2idx = {}
+        self.idx2word = {}
+        self.idx = 0
 
-#     def add_word(self, word):
-#         if not word in self.word2idx:
-#             self.word2idx[word] = self.idx
-#             self.idx2word[self.idx] = word
-#             self.idx += 1
+    def add_word(self, word):
+        if not word in self.word2idx:
+            self.word2idx[word] = self.idx
+            self.idx2word[self.idx] = word
+            self.idx += 1
 
-#     def __call__(self, word):
-#         if not word in self.word2idx:
-#             return self.word2idx['<unk>']
-#         return self.word2idx[word]
+    def __call__(self, word):
+        if not word in self.word2idx:
+            return self.word2idx['<unk>']
+        return self.word2idx[word]
 
-#     def __len__(self):
-#         return len(self.word2idx)
+    def __len__(self):
+        return len(self.word2idx)
 def load_image(image_path, transform=None):
     image = Image.open(image_path).convert('RGB')
     image = image.resize([224, 224], Image.LANCZOS)
@@ -120,7 +120,9 @@ def test():
         return "I'm alive!"
 if __name__ == "__main__":
     
-
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
+        app.run(debug=True,port=8080)
     # def caption(vocab, imagepath):
     
     
@@ -168,4 +170,4 @@ if __name__ == "__main__":
     #     # plt.imshow(np.asarray(image))
     #     return (sentence)
     
-    app.run(debug=True,port=8080)
+    
