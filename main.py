@@ -7,7 +7,7 @@ import numpy as np
 # import pickle 
 # import os
 from torchvision import transforms 
-# from build_vocab import Vocabulary
+from build_vocab import Vocabulary
 from model import EncoderCNN, DecoderRNN
 from PIL import Image
 import pyttsx3
@@ -20,26 +20,26 @@ app = Flask(__name__)
 import os
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-class Vocabulary(object):
-    """Simple vocabulary wrapper."""
-    def __init__(self):
-        self.word2idx = {}
-        self.idx2word = {}
-        self.idx = 0
+# class Vocabulary(object):
+#     """Simple vocabulary wrapper."""
+#     def __init__(self):
+#         self.word2idx = {}
+    #     self.idx2word = {}
+    #     self.idx = 0
 
-    def add_word(self, word):
-        if not word in self.word2idx:
-            self.word2idx[word] = self.idx
-            self.idx2word[self.idx] = word
-            self.idx += 1
+    # def add_word(self, word):
+    #     if not word in self.word2idx:
+    #         self.word2idx[word] = self.idx
+    #         self.idx2word[self.idx] = word
+    #         self.idx += 1
 
-    def __call__(self, word):
-        if not word in self.word2idx:
-            return self.word2idx['<unk>']
-        return self.word2idx[word]
+    # def __call__(self, word):
+    #     if not word in self.word2idx:
+    #         return self.word2idx['<unk>']
+    #     return self.word2idx[word]
 
-    def __len__(self):
-        return len(self.word2idx)
+    # def __len__(self):
+    #     return len(self.word2idx)
 def load_image(image_path, transform=None):
     image = Image.open(image_path).convert('RGB')
     image = image.resize([224, 224], Image.LANCZOS)
@@ -48,18 +48,10 @@ def load_image(image_path, transform=None):
         image = transform(image).unsqueeze(0)
     
     return image
-from settings import Manager
 
-class CustomUnpickler(pickle.Unpickler):
-
-    def find_class(self, module, name):
-        try:
-            return super().find_class(__name__, name)
-        except AttributeError:
-            return super().find_class(module, name)
 def caption(imagepath):
     
-    vocab = CustomUnpickler(open('data/vocab.pkl', 'rb')).load()
+    
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
@@ -68,8 +60,8 @@ def caption(imagepath):
     # with open('data/vocab.pkl', 'rb') as f:
     #     vocab = pickle.load(f)
     # Load vocabulary wrapper
-    # with open('data/vocab.pkl', 'rb') as f:
-    #     vocab = pickle.load(f)
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
 
     # Build models
     encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
