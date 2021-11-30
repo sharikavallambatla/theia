@@ -48,10 +48,18 @@ def load_image(image_path, transform=None):
         image = transform(image).unsqueeze(0)
     
     return image
+from settings import Manager
 
+class CustomUnpickler(pickle.Unpickler):
+
+    def find_class(self, module, name):
+        try:
+            return super().find_class(__name__, name)
+        except AttributeError:
+            return super().find_class(module, name)
 def caption(imagepath):
     
-    
+    vocab = CustomUnpickler(open('data/vocab.pkl', 'rb')).load()
     # Image preprocessing
     transform = transforms.Compose([
         transforms.ToTensor(), 
@@ -60,8 +68,8 @@ def caption(imagepath):
     # with open('data/vocab.pkl', 'rb') as f:
     #     vocab = pickle.load(f)
     # Load vocabulary wrapper
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
 
     # Build models
     encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
@@ -120,8 +128,8 @@ def test():
         return "I'm alive!"
 if __name__ == "__main__":
     
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
         app.run(debug=True,port=8080)
     # def caption(vocab, imagepath):
     
