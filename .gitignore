@@ -3,6 +3,7 @@ data/annotations
 data/resized2014
 data/train2014
 data/val2014
+data/vocab.pkl
 __pycache__
 
 
