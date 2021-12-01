@@ -18,7 +18,7 @@ import argparse
 from collections import Counter
 app = Flask(__name__)
 import os
-
+vocab=None
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # class Vocabulary(object):
 #     """Simple vocabulary wrapper."""
@@ -60,8 +60,8 @@ def caption(imagepath):
     # with open('data/vocab.pkl', 'rb') as f:
     #     vocab = pickle.load(f)
     # Load vocabulary wrapper
-    with open('data/vocab.pkl', 'rb') as f:
-        vocab = pickle.load(f)
+    # with open('data/vocab.pkl', 'rb') as f:
+    #     vocab = pickle.load(f)
 
     # Build models
     encoder = EncoderCNN(256).eval()  # eval mode (batchnorm uses moving mean/variance)
@@ -119,10 +119,14 @@ def test():
     else :
         return "I'm alive!"
 if __name__ == "__main__":
-    
+    with open('data/vocab.pkl', 'rb') as f:
+        vocab = pickle.load(f)
+    f = open("data/vocab.pkl","rb")
+    vocab = pickle.load(f)
+    f.close()
     # with open('data/vocab.pkl', 'rb') as f:
     #     vocab = pickle.load(f)
-        app.run(debug=True,port=8080)
+    app.run(debug=True,port=8080)
     # def caption(vocab, imagepath):
     
     
